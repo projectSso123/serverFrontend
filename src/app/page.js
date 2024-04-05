@@ -1,113 +1,305 @@
-import Image from "next/image";
-
+"use client"
+import { ThemeProvider } from "styled-components";
+import StyledContainer, { StyledButton, StyledFrom, StyledInput, StyledLabel } from '../styled.component/form.styledcomponent.js'
+import { StyledHeader } from "../styled.component/form.styledcomponent.js";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { StyledBox } from "../styled.component/form.styledcomponent.js";
+import { StyledTile } from "../styled.component/form.styledcomponent.js";
+const theme = {
+  dark:{
+    primary:"black",
+    text:"white"
+  },
+  light:{
+    primary:"white",
+    text:"black"
+  }
+}
 export default function Home() {
+  const [display , setdisplay] = useState(1);
+  const [userAccountData, setuserAccountData] = useState()
+  const [isloggedIn, setLoggedin] = useState(false)
+  const handleSignup = (n)=>{
+    setdisplay(1);
+  }
+  const getusers= async()=>{
+    try{
+      const response = await fetch("http://localhost:8080/api/v1/getusers",{
+    method:"POST",
+    mode:"cors",
+    credentials:"include"
+   })
+   if(response.ok){
+    console.log(response)
+    const data = await response.json();
+    if(data)
+    setuserAccountData(data)
+
+   }
+
+    }
+    catch(err){
+    console.log(err)
+    }
+  }
+  useEffect(()=>{
+    
+   getusers();
+
+  },[isloggedIn])
+  
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <ThemeProvider theme={theme}>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+    {
+      userAccountData  ?    <ChooseAccountTable data={userAccountData}>
+  
+      </ChooseAccountTable> : display === 2 ? <Signup handleSignup={handleSignup} setdisplay={setdisplay}></Signup> :display === 1 && <Login setdisplay={setdisplay} setLoggedin={setLoggedin} ></Login>
+    }
+   
+    </ThemeProvider>
+      );
+}
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+function Login({setdisplay , setLoggedin}){
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+  const [credential , setcredential] = useState({email:"",password:""})
+  const [redirect_uri, setredirect] = useState('');
+  const [client_id ,setClient_id] = useState('');
+  const [state,setstate] = useState();
+ 
+   useEffect(()=>{
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirect_uri = urlParams.get('redirect_uri');
+    const client_id = urlParams.get('client_id');
+    setstate(urlParams.get('state'))
+    setredirect(redirect_uri);
+    setClient_id(client_id);
+  
+   },[])
+  const changehandler = (e) =>{
+    setcredential({...credential, [e.target.name]: e.target.value});
+    }
+  
+  
+  const submithandler = async(event)=>{
+    event.preventDefault()
+    try{
+   
+    const response = await fetch('http://localhost:8080/api/v1/signin',{
+      method:"POST",
+      mode:'cors',
+      credentials:"include",
+      headers: {
+        'Content-Type': 'application/json',
+    },
+    body:JSON.stringify({email:credential.email,password:credential.password,state:state})
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    })
+    if(!response.ok){
+      console.log("failed")
+      alert(response.message)
+    }
+    else{
+      const data = await response.json();
+      setLoggedin(true)
+        
+    }
+    }
+    catch(err){
+      console.log(err)
+    }
+  }
+  return(
+    <>
+    <StyledContainer>
+    <StyledLabel>Sign up with Root</StyledLabel>
+      <StyledHeader>Login</StyledHeader>
+    <StyledFrom>
+      <StyledInput placeholder="email" name="email" onChange={changehandler}></StyledInput>
+      <StyledInput placeholder="password" name="password" onChange={changehandler}></StyledInput>
+
+      <StyledButton onClick={submithandler}>Proceed</StyledButton>
+ 
+      </StyledFrom>
+    </StyledContainer>
+      <StyledButton onClick={()=>{
+        setdisplay(2);
+      }}>Proceed</StyledButton>
+      this is button
+      <StyledButton onClick={async()=>{
+        const response  = fetch("http://localhost:8080/login",{
+          method:"POST",
+      mode:'cors',
+      credentials:"include",
+      headers: {
+        'Content-Type': 'application/json',
+    },
+    body:JSON.stringify({email:"rohanb@gmail.com"})
+        })
+     if(response.ok){
+      const data = await response.JSON();
+      console.log(data);
+     }  
+      }
+        }> Click me</StyledButton>
+      <StyledButton onClick={async()=>{
+        const response  = fetch("http://localhost:8080/login",{
+          method:"POST",
+      mode:'cors',
+      credentials:"include",
+      headers: {
+        'Content-Type': 'application/json',
+    },
+    body:JSON.stringify({email:"rohankir@gmail.com"})
+        })
+     if(response.ok){
+      const data = await response.JSON();
+      console.log(data);
+     }  
+      }
+        }> Click me</StyledButton>
+      <StyledButton onClick={async()=>{
+        const response  = fetch("http://localhost:8080/getusers",{
+          method:"POST",
+      mode:'cors',
+      credentials:"include",
+        })
+     if(response.ok){
+      const data = await response.JSON();
+      console.log(data);
+     }  
+      }
+        }> Click me</StyledButton>
+    
+    </>
+  )
+}
+function Signup({handleSignup,setdisplay}){
+  const [step , setstep ] = useState(1)
+  const nextStep = () => setstep(step + 1);
+  const prevStep = () => setstep(step - 1);
+  const [name,setname] = useState("");
+  const [username , setusername] = useState("");
+  const [email, setemail] = useState("");
+  const [password, setpassword] = useState("");
+  const [password2, setpassword2] = useState("");
+  const [message,setmessage] = useState("");
+   useEffect(()=>{
+    if(password != password2) {
+      setmessage("password not matching")
+    }
+    else{
+      if(password.length && password2.length)
+      setmessage("password matched")
+    }
+  },[password2])
+  function handlesubmit(){
+
+  }
+  return(
+    <StyledContainer>
+    <StyledLabel>Sign up with Root</StyledLabel>
+      <StyledHeader>SignUp</StyledHeader>
+      <StyledFrom>
+      {step <= 1 && (<>
+        <StyledInput placeholder="name" 
+        onChange={(e)=>{
+          setname(e.target.value);
+        }}
+        
+        required></StyledInput>
+      <StyledInput placeholder="username"
+      onChange={(e)=>{
+        setusername(e.target.value);
+      }}
+      required></StyledInput>
+      <StyledButton type='submit' onClick={nextStep}>Continue</StyledButton>
+      </>)}
+      {step === 2 && (<>
+        <StyledInput type="email" placeholder="email" 
+        onChange={(e)=>{
+          setemail(e.target.value);
+        }}
+        required></StyledInput>
+      <StyledButton type='submit' onClick={nextStep}>Continue</StyledButton>
+      </>)}
+      {step === 3 && (<>
+        <StyledInput type="password" placeholder="password" 
+        onChange={(e)=>{
+          setpassword(e.target.value);
+        }}
+        required></StyledInput>
+        <StyledInput type="password" placeholder="re-enter password" 
+        onChange={(e)=>{
+          setpassword2(e.target.value);
+        }}
+        required></StyledInput>
+        <span>{message}</span>
+      <StyledButton type='submit' onClick={()=>{
+        handleSignup(1);
+      }}>Continue</StyledButton>
+      </>)}
+      </StyledFrom>
+      
+    </StyledContainer>
+  )
+}
+function ChooseAccountTable({data}){
+  const router = useRouter();
+  const params = new URLSearchParams(window.location.search);
+  const redirect_uri = params.get("redirect_uri");
+  const handlesubmit = async(data)=>{
+    try{
+      const response = await fetch('http://localhost:8080/api/v1/getauthcode',{
+        method:"POST",
+        mode:"cors",
+        credentials:"include",
+        headers: {
+          'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({email:data.email})
+
+      })
+      if(!response.ok){
+       alert("something went wrong")
+      }
+      else{
+       const data  = await response.json();
+           const params ={
+       code:data,
+     }
+     console.log("pohoch gaya")
+     if(!redirect_uri === "")
+     window.location.href = `${redirect_uri}?${new URLSearchParams(params)}`
+     else{
+      console.log("working")
+     router.push("/dashboard")
+     }
+
+      }
+   }catch(err){
+
+   }
+  }
+  return (
+    <>
+    <StyledContainer>
+    <StyledLabel>Sign up with Root</StyledLabel>
+      <StyledHeader>Choose Account</StyledHeader>
+      <StyledBox>
+        <StyledTile onClick={()=>{
+          handlesubmit(data);
+        }}>
+          <span className="tileUsername">{data.username}</span>
+          <span className="tileEmail">{data.email}</span>
+        </StyledTile>
+
+
+      </StyledBox>
+    </StyledContainer>
+    </>
+  )
 }
