@@ -7,7 +7,7 @@ export default function layout ({children}) {
     <div className="w-screen overflow-x-hidden">
         
         <Header/>
-        
+
         <div className="w-full flex min-h-[85vh] ">
           <Sidenav/>
           <div className="ml-[16vw] w-[84vw]">{children}</div>

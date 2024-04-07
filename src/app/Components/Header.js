@@ -3,7 +3,7 @@
 const Header = () => {
     
     return (
-      <div className="sticky z-[9] top-0 right-0 border-b border-black  w-full h-[15vh] flex justify-evenly gap-[50vw] bg-white {
+      <div className="fixed z-[9] top-0 right-0 border-b border-black  w-full h-[15vh] flex justify-evenly gap-[50vw] bg-white {
         #ffffffbc
       }] ">
   
