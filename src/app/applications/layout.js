@@ -1,6 +1,6 @@
 import React from 'react'
 import Header from '../Components/Header'
-import Sidenav from '../Components/User.Sidenav'
+import Sidenav from '../Components/Application.Sidenav'
 
 export default function layout ({children}) {
   return (

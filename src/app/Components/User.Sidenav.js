@@ -9,8 +9,8 @@ const Sidenav = () => {
             Profile 
         </Link>
 
-        <Link href={"/dashboard"}  className="px-3 py-2 rounded-md  hover:bg-green-800 transition-all w-[150px] hover:text-white font-semibold ">
-            Title 
+        <Link href={"/applications"}  className="px-3 py-2 rounded-md  hover:bg-green-800 transition-all w-[150px] hover:text-white font-semibold ">
+            Registered application
         </Link>
 
         <Link href={"/dashboard"}  className="px-3 py-2 rounded-md  hover:bg-green-800 transition-all w-[150px] hover:text-white font-semibold ">

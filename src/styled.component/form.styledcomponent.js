@@ -2,48 +2,45 @@ import  styled  from "styled-components";
 
 const StyledContianer  =  styled.div`
   padding:10px;
-  min-height: 70vh;
+  height: 80vh;
   width:50vw;
   background-color:rgba(255,255,255);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-radius:12px;
   margin:40px auto;
   padding:5px;
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: 25px 30% 50%;
+  display:flex;
+  align-items: center;
+  flex-direction: column;
  align-items: center;
   @media (max-width: 700px) {
     width:90vw;
     margin: 50px auto;
-    height: 60vh;
+    /* min-height: 60vh; */
 }
   @media (max-width: 1024px) {
     width:80vw;
     margin: 50px auto;
-    height: 60vh;
+    /* height: 60vh; */
 }
 
 `
 export const StyledFrom = styled.form`
   width: 100%;
-  grid-row: 3; 
   display: flex;
-  
   flex-direction: column;
   align-items: center;
+  justify-content:center;
   gap:20px;
-  justify-content:flex-start;
+  height: 60vh;
 `
 export const StyledHeader = styled.h1`
  width: 100%;
  font-weight: 900;
  grid-row: 2; 
  color:rgb(242,101,84);
-  text-align: center;
-
-
-  font-size: 28px;
+ text-align: center;
+ font-size: 28px;
 `
 export const StyledLabel = styled.label`
 
@@ -78,10 +75,11 @@ background:rgba(255,255,255, 0.40);
 
 `
 export const StyledButton = styled.button`
-width: 50%;
+width: 25%;
 padding: 5px;
+border-radius:12px;
 background:rgb(242,101,84);
-height: 50px;
+height: 40px;
 color:white;
 font-weight: bold;
 box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
@@ -97,18 +95,20 @@ transition: transform 0.1s ease;
 `
 export const StyledBox  = styled.div`
 width: 50%;
-height: 100%;
+height: 70%;
 display: flex;
 flex-direction: column;
-margin:10px auto;
+align-items: center;
+margin:30px auto;
 `
 export const StyledTile = styled.div`
 margin-top: 4px;
-width: 100%;
+width: 70%;
 height:40px;
 background: rgba(0, 0, 0, 0.2);
 display: flex;
 flex-direction: column;
+justify-content: center;
 border-radius:5px;
 `
 export default StyledContianer

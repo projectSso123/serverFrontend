@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StyledBox } from "../styled.component/form.styledcomponent.js";
 import { StyledTile } from "../styled.component/form.styledcomponent.js";
+import './page.scss'
 const theme = {
   dark:{
     primary:"black",
@@ -20,8 +21,32 @@ export default function Home() {
   const [display , setdisplay] = useState(1);
   const [userAccountData, setuserAccountData] = useState()
   const [isloggedIn, setLoggedin] = useState(false)
+  const [verified , setverified] = useState(false)
+  
   const handleSignup = (n)=>{
     setdisplay(1);
+  }
+  const verify = async(obj)=>{
+    try{
+      const response = await fetch("http://localhost:8080/api/v1/verfiyclient",{
+        method:"POST",
+        credentials:"include",
+        mode:"cors",
+        headers: {
+          'Content-Type': 'application/json',
+      },
+      body:JSON.stringify(obj)
+      })
+      if(!response.ok){
+      //  setverified(false)
+      }
+      else{
+        setverified(true)
+      }
+    }
+    catch(err){
+
+    }
   }
   const getusers= async()=>{
     try{
@@ -44,14 +69,31 @@ export default function Home() {
     }
   }
   useEffect(()=>{
-    
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirect_uri = urlParams.get('redirect_uri');
+    const client_id = urlParams.get('client_id');
+    const response_type = urlParams.get("response_type")
+    const scope = urlParams.get("scope")
+    const state = urlParams.get('state')
+    if(redirect_uri == null && client_id == null && response_type == null && scope == null && state == null){
+      setverified(true)
+    }
+    else{
+      verify({urlParams,redirect_uri,client_id,response_type,scope,state})
+    }
    getusers();
 
   },[isloggedIn])
-  
+  if(!verified){
+    return (
+      <ThemeProvider theme={theme}>
+      <UnAuthorized data={userAccountData}></UnAuthorized>
+      </ThemeProvider>
+    )
+  }
   return (
     <ThemeProvider theme={theme}>
-
+    
     {
       userAccountData  ?    <ChooseAccountTable data={userAccountData}>
   
@@ -60,6 +102,25 @@ export default function Home() {
    
     </ThemeProvider>
       );
+}
+function UnAuthorized ({data}){
+  return(
+  <StyledContainer>
+    <StyledLabel>Sign up with Root</StyledLabel>
+
+      <span className="auth-heading">Access blocked: Authorization Error</span>
+     {/* { data && <StyledTile>
+          <span className="tileUsername">{data.username}</span>
+          <span className="tileEmail">{data.email}</span>
+        </StyledTile>} */}
+        <StyledTile>
+          <span className="tileEmail">rohanb23@gmail.com</span>
+        </StyledTile>
+
+      <div className="auth-info">The OAuth client was not found.</div>
+      <div className="auth-info">Error 401: invalid_client</div>
+  </StyledContainer>
+  )
 }
 
 function Login({setdisplay , setLoggedin}){
@@ -74,6 +135,7 @@ function Login({setdisplay , setLoggedin}){
     const urlParams = new URLSearchParams(window.location.search);
     const redirect_uri = urlParams.get('redirect_uri');
     const client_id = urlParams.get('client_id');
+    
     setstate(urlParams.get('state'))
     setredirect(redirect_uri);
     setClient_id(client_id);
@@ -180,7 +242,15 @@ function Login({setdisplay , setLoggedin}){
 function Signup({handleSignup,setdisplay}){
   const [step , setstep ] = useState(1)
   const nextStep = () => setstep(step + 1);
-  const prevStep = () => setstep(step - 1);
+  const prevStep = () => {
+     if(step == 1){
+      setstep(1)
+     }
+     else{
+
+       setstep(step - 1);
+    }
+  }
   const [name,setname] = useState("");
   const [username , setusername] = useState("");
   const [email, setemail] = useState("");
@@ -196,51 +266,76 @@ function Signup({handleSignup,setdisplay}){
       setmessage("password matched")
     }
   },[password2])
-  function handlesubmit(){
+ async function handlesubmit(){
 
+   try{
+    const response = await fetch("http://localhost:8080/api/v1/signup",{
+      method:"POST",
+      credentials:"include",
+      mode:"cors",
+      headers: {
+        'Content-Type': 'application/json',
+    },
+    body:JSON.stringify({name:name,username:username,email:email,password:password})
+    })
+    const data = await response.json()
+    if(!response.ok){
+      console.log(data)
+    
+    }
+    {
+      handleSignup(1)
+      console.log(data)
+    }
+    
+   }
+   catch(err){
+    console.log(err);
+   }
   }
   return(
     <StyledContainer>
     <StyledLabel>Sign up with Root</StyledLabel>
       <StyledHeader>SignUp</StyledHeader>
-      <StyledFrom>
+      <StyledFrom onSubmit={handlesubmit}>
       {step <= 1 && (<>
         <StyledInput placeholder="name" 
         onChange={(e)=>{
           setname(e.target.value);
         }}
         
-        required></StyledInput>
+        required/>
       <StyledInput placeholder="username"
       onChange={(e)=>{
         setusername(e.target.value);
       }}
-      required></StyledInput>
-      <StyledButton type='submit' onClick={nextStep}>Continue</StyledButton>
+      required />
+      <StyledButton type='submit' onClick={nextStep}>Next</StyledButton>
+      <StyledButton type='submit' onClick={prevStep}>Previous</StyledButton>
       </>)}
       {step === 2 && (<>
         <StyledInput type="email" placeholder="email" 
         onChange={(e)=>{
           setemail(e.target.value);
         }}
-        required></StyledInput>
-      <StyledButton type='submit' onClick={nextStep}>Continue</StyledButton>
+        required />
+       <StyledButton type='submit' onClick={nextStep}>Next</StyledButton>
+      <StyledButton type='submit' onClick={prevStep}>Previous</StyledButton>
       </>)}
       {step === 3 && (<>
         <StyledInput type="password" placeholder="password" 
         onChange={(e)=>{
           setpassword(e.target.value);
         }}
-        required></StyledInput>
+        required />
         <StyledInput type="password" placeholder="re-enter password" 
         onChange={(e)=>{
           setpassword2(e.target.value);
         }}
-        required></StyledInput>
+        required />
         <span>{message}</span>
-      <StyledButton type='submit' onClick={()=>{
-        handleSignup(1);
-      }}>Continue</StyledButton>
+        <StyledButton type='submit' onClick={prevStep}>Previous</StyledButton>
+      <StyledButton type='submit'>Signup</StyledButton>
       </>)}
       </StyledFrom>
       
@@ -251,7 +346,13 @@ function ChooseAccountTable({data}){
   const router = useRouter();
   const params = new URLSearchParams(window.location.search);
   const redirect_uri = params.get("redirect_uri");
+  console.log(redirect_uri)
   const handlesubmit = async(data)=>{
+    if(!redirect_uri){
+      console.log("working")
+      router.push("/dashboard")
+    }
+    else{
     try{
       const response = await fetch('http://localhost:8080/api/v1/getauthcode',{
         method:"POST",
@@ -269,20 +370,14 @@ function ChooseAccountTable({data}){
       else{
        const data  = await response.json();
            const params ={
-       code:data,
-     }
-     console.log("pohoch gaya")
-     if(!redirect_uri === "")
-     window.location.href = `${redirect_uri}?${new URLSearchParams(params)}`
-     else{
-      console.log("working")
-     router.push("/dashboard")
-     }
-
+         code:data,
+           }
+       window.location.href = `${redirect_uri}?${new URLSearchParams(params)}`
       }
    }catch(err){
 
    }
+  }
   }
   return (
     <>
