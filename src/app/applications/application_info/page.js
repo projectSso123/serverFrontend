@@ -1,7 +1,35 @@
 import ApplicationCard from '@/app/Components/ApplicationCard'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 const application_info = () => {
+
+  const [appInfo, setAppInfo] = useState([])
+
+  useEffect(()=>{
+    getProfile()
+  },[])
+
+  const getProfile = async() => {
+    try {
+        const res = await fetch('http://localhost:8080/api/v1/getapplications',{
+            method:"POST",
+            credentials:'include',
+            mode:'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        if(res.ok)
+        {
+            const data = await res.json();
+            setAppInfo(data)
+            console.log(data)
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+  
   return (
     <div className='w-full h-auto p-5 '>
         
@@ -11,9 +39,9 @@ const application_info = () => {
         {/* application cards gallery */}
         <div className='flex flex-wrap gap-5 mt-5'>
             {
-                Array(9).fill(1).map((obj,i)=>(
-                    <ApplicationCard key={i} />
-                ))
+              appInfo.map((obj,i)=>(
+                  <ApplicationCard key={i} />
+              ))
             }
         </div>
     </div>
