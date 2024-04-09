@@ -12,7 +12,7 @@ export default function Profile(){
 
     const getProfile = async() => {
         try {
-            const res = await fetch('http://localhost:8080/api//v1/getprofile',{
+            const res = await fetch('http://localhost:8080/api/v1/getprofile',{
                 method:"POST",
                 credentials:'include',
                 mode:'cors',
