@@ -22,7 +22,7 @@ export default function Home() {
   const [userAccountData, setuserAccountData] = useState()
   const [isloggedIn, setLoggedin] = useState(false)
   const [verified , setverified] = useState(false)
-  
+  const [clientData , setclientData] = useState()
   const handleSignup = (n)=>{
     setdisplay(1);
   }
@@ -41,6 +41,7 @@ export default function Home() {
       //  setverified(false)
       }
       else{
+        setclientData(obj)
         setverified(true)
       }
     }
@@ -80,6 +81,7 @@ export default function Home() {
     }
     else{
       verify({urlParams,redirect_uri,client_id,response_type,scope,state})
+      
     }
    getusers();
 
@@ -95,7 +97,7 @@ export default function Home() {
     <ThemeProvider theme={theme}>
     
     {
-      userAccountData  ?    <ChooseAccountTable data={userAccountData}>
+      userAccountData  ?    <ChooseAccountTable data={userAccountData} clientData={clientData}>
   
       </ChooseAccountTable> : display === 2 ? <Signup handleSignup={handleSignup} setdisplay={setdisplay}></Signup> :display === 1 && <Login setdisplay={setdisplay} setLoggedin={setLoggedin} ></Login>
     }
@@ -183,58 +185,14 @@ function Login({setdisplay , setLoggedin}){
       <StyledInput placeholder="email" name="email" onChange={changehandler}></StyledInput>
       <StyledInput placeholder="password" name="password" onChange={changehandler}></StyledInput>
 
-      <StyledButton onClick={submithandler}>Proceed</StyledButton>
- 
-      </StyledFrom>
-    </StyledContainer>
+      <StyledButton onClick={submithandler}>Login</StyledButton>
       <StyledButton onClick={()=>{
         setdisplay(2);
-      }}>Proceed</StyledButton>
-      this is button
-      <StyledButton onClick={async()=>{
-        const response  = fetch("http://localhost:8080/login",{
-          method:"POST",
-      mode:'cors',
-      credentials:"include",
-      headers: {
-        'Content-Type': 'application/json',
-    },
-    body:JSON.stringify({email:"rohanb@gmail.com"})
-        })
-     if(response.ok){
-      const data = await response.JSON();
-      console.log(data);
-     }  
-      }
-        }> Click me</StyledButton>
-      <StyledButton onClick={async()=>{
-        const response  = fetch("http://localhost:8080/login",{
-          method:"POST",
-      mode:'cors',
-      credentials:"include",
-      headers: {
-        'Content-Type': 'application/json',
-    },
-    body:JSON.stringify({email:"rohankir@gmail.com"})
-        })
-     if(response.ok){
-      const data = await response.JSON();
-      console.log(data);
-     }  
-      }
-        }> Click me</StyledButton>
-      <StyledButton onClick={async()=>{
-        const response  = fetch("http://localhost:8080/getusers",{
-          method:"POST",
-      mode:'cors',
-      credentials:"include",
-        })
-     if(response.ok){
-      const data = await response.JSON();
-      console.log(data);
-     }  
-      }
-        }> Click me</StyledButton>
+      }}>SignUp</StyledButton>
+      </StyledFrom>
+    </StyledContainer>
+    
+     
     
     </>
   )
@@ -342,7 +300,7 @@ function Signup({handleSignup,setdisplay}){
     </StyledContainer>
   )
 }
-function ChooseAccountTable({data}){
+function ChooseAccountTable({data,clientData}){
   const router = useRouter();
   const params = new URLSearchParams(window.location.search);
   const redirect_uri = params.get("redirect_uri");
@@ -361,7 +319,7 @@ function ChooseAccountTable({data}){
         headers: {
           'Content-Type': 'application/json',
       },
-      body:JSON.stringify({email:data.email})
+      body:JSON.stringify(clientData)
 
       })
       if(!response.ok){
