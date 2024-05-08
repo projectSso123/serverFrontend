@@ -2,13 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import JoditEditor from 'jodit-react';
+import dynamic from 'next/dynamic';
+const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
 const News = () => {
 
     const router = useRouter()
     const urlParams = new URLSearchParams(window.location.search)
     const id = urlParams.get('_id')
+    const type  = urlParams.get("type")
     
   const editor = useRef(null);
 	const [content, setContent] = useState(urlParams.get('content'))
@@ -21,14 +23,14 @@ const News = () => {
 
 	const sendEditNewsReq = async(content) => {
 		
-		let res =  await fetch("http://localhost:8080/api/v1/broadcast/addnews",{
+		let res =  await fetch("http://localhost:8080/api/v1/broadcast/updatenews",{
 			method: 'POST', 
             credentials:'include',
             mode:"cors",
 			headers: {
 			  'Content-Type': 'application/json', 
 			},
-			body: JSON.stringify({content:content})
+			body: JSON.stringify({newsid:id,content:content})
 		})
 		
 		if(res.ok)
@@ -46,7 +48,7 @@ const News = () => {
   return (
     <div className='min-h-[85vh] w-full flex flex-col gap-[5vh] '>
 
-      <div className='py-2 text-center text-black bg-green-300'> <p className='font-semibold'>EDIT NEWS</p> </div>
+      <div className='py-2 text-center text-black bg-green-300'> <p className='font-semibold'>EDIT {type}</p> </div>
 
       <div className='min-h-[50vh] bg-white px-3 py-1 rounded-lg shadow-lg '>
         <JoditEditor

@@ -215,6 +215,13 @@ function Signup({handleSignup,setdisplay}){
   const [password, setpassword] = useState("");
   const [password2, setpassword2] = useState("");
   const [message,setmessage] = useState("");
+  const [clientid ,setclientid] = useState("")
+   useEffect(()=>{
+    const urlParams = new URLSearchParams(window.location.search);
+    const client_id = urlParams.get('client_id');
+    
+    setclientid(client_id);
+   },[])
    useEffect(()=>{
     if(password != password2) {
       setmessage("password not matching")
@@ -224,6 +231,27 @@ function Signup({handleSignup,setdisplay}){
       setmessage("password matched")
     }
   },[password2])
+ async function createEditor(data){
+  if(clientid){
+    try{
+      const response  = fetch("http://localhost:8080/api/v1/addeditor",{
+        method:"POST",
+        mode:'cors',
+        credentials:"include",
+        headers: {
+          'Content-Type': 'application/json',
+      },
+      body:JSON.stringify({userid:data._id,clientid:clientid})
+      })
+      if(!response.ok){
+        console.log(response)
+      }
+    }
+    catch(err){
+      console.log(err)
+    }
+  }
+ }
  async function handlesubmit(){
 
    try{
@@ -241,8 +269,10 @@ function Signup({handleSignup,setdisplay}){
       console.log(data)
     
     }
-    {
-      handleSignup(1)
+    else
+    { 
+      createEditor(data);
+      setdisplay(1)
       console.log(data)
     }
     
@@ -255,7 +285,10 @@ function Signup({handleSignup,setdisplay}){
     <StyledContainer>
     <StyledLabel>Sign up with Root</StyledLabel>
       <StyledHeader>SignUp</StyledHeader>
-      <StyledFrom onSubmit={handlesubmit}>
+      <StyledFrom onSubmit={(e)=>{
+        e.preventDefault();
+        handlesubmit()
+      }}>
       {step <= 1 && (<>
         <StyledInput placeholder="name" 
         onChange={(e)=>{
@@ -292,7 +325,7 @@ function Signup({handleSignup,setdisplay}){
         }}
         required />
         <span>{message}</span>
-        <StyledButton type='submit' onClick={prevStep}>Previous</StyledButton>
+        <StyledButton  onClick={prevStep}>Previous</StyledButton>
       <StyledButton type='submit'>Signup</StyledButton>
       </>)}
       </StyledFrom>
