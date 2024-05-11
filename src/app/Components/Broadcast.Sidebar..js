@@ -9,7 +9,7 @@ const BroadcastSidebar = () => {
             Add News 
         </Link>
 
-        <Link href={"/dashboard/application"}  className="px-3 py-2 text-sm rounded-md  hover:bg-green-200 transition-all w-[150px]  font-semibold ">
+        <Link href={"/broadcast/addBanner"}  className="px-3 py-2 text-sm rounded-md  hover:bg-green-200 transition-all w-[150px]  font-semibold ">
             Add Banner
         </Link>
 
