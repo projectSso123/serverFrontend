@@ -17,7 +17,7 @@ export default function EditPage({id , type}){
 
 	const sendEditNewsReq = async(content) => {
 		
-		let res =  await fetch("http://localhost:8080/api/v1/broadcast/updatenews",{
+		let res =  await fetch(BACKEND_BASE_URL+"/api/v1/broadcast/updatenews",{
 			method: 'POST', 
             credentials:'include',
             mode:"cors",

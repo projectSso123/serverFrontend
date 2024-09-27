@@ -13,7 +13,7 @@ const BannerContent = () => {
   }
   const getBanners = async()=>{
     try{
-      const response = await fetch("http://localhost:8080/api/v1/broadcast/getbanner",{
+      const response = await fetch(BACKEND_BASE_URL+"/api/v1/broadcast/getbanner",{
         method: 'POST',
         cache: 'no-store',
         credentials:'include',
@@ -39,7 +39,7 @@ const BannerContent = () => {
     const formdata = new FormData();
     formdata.append('banner',image);
 
-    const response = await fetch(`http://localhost:8080/api/v1/broadcast/addbanner`,{
+    const response = await fetch(BACKEND_BASE_URL+"/api/v1/broadcast/addbanner",{
         method: 'POST',
         cache: 'no-store',
         credentials:'include',
