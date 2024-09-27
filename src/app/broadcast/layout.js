@@ -1,22 +1,22 @@
-'use client'
-
+"use client"
 import React from 'react'
-import Header from '../Components/Header'
-import Sidenav from '../Components/User.Sidenav'
-import BroadcastSidebar from '../Components/Broadcast.Sidebar.'
+import SideBar from './Component/sideBar';
+import { createContext,  useState } from 'react';
+import { PROFILE_PAGE,NEWS_PAGE,NOTIFICATION_PAGE,BANNER_PAGE } from './Consts';
 
-export default function layout ({children}) {
-  return (
-    <div className="w-screen overflow-x-hidden">
-        
-        <Header/>
+export const SidebarContext = createContext();
 
-        <div className="w-full flex min-h-[85vh] ">
-          <BroadcastSidebar/>
-          <div className="ml-[16vw] w-[84vw] mt-[15vh] min-h-[85vh]">{children}</div>
-        </div>
-        
-      </div>
-  )
+function DashboardLayout({children}){
+    const [currentPage, setCurrentPage] = useState(PROFILE_PAGE)
+return (
+<SidebarContext.Provider value={{currentPage,setCurrentPage}} >
+<div className='flex flex-grow relative'>
+<SideBar></SideBar>
+<div className='ml-72 w-4/6'>
+    {children}
+</div>
+</div>
+</SidebarContext.Provider>
+)
 }
-
+export default DashboardLayout;

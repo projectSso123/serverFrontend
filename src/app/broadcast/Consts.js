@@ -1,0 +1,5 @@
+export const BACKEND_BASE_URL = "http://localhost:8080"
+export const PROFILE_PAGE = "PROFILE_PAGE"
+export const NEWS_PAGE = "NEWS_PAGE"
+export const NOTIFICATION_PAGE = "NOTIFICATION_PAGE"
+export const BANNER_PAGE = "BANNER_PAGE"

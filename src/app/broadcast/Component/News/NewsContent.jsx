@@ -1,30 +1,29 @@
 'use client'
-
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
 import dynamic from 'next/dynamic';
+import { BACKEND_BASE_URL } from '../../Consts';
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
-const News = () => {
+const NewsContent = ({}) => {
 
-    const router = useRouter()
+const router = useRouter()
 
-	useEffect(()=>{
-		getNews()
-	},[])
+useEffect(()=>{
+	getNews()
+},[])
    
     const editor = useRef(null);
 	const [content, setContent] = useState('')
 	const [news,setNews] = useState([])
 	
 	const addNewsHandler = () => {
-		console.log("got this in final :",content);
-		sendPostNewsReq(content);
+		
+		PostNewsReq(content);
 	}
 
-	const sendPostNewsReq = async(content) => {
+	const PostNewsReq = async(content) => {
 		
-		let res =  await fetch("http://localhost:8080/api/v1/broadcast/addnews",{
+		let res =  await fetch(BACKEND_BASE_URL+"/api/v1/broadcast/addnews",{
 			method: 'POST', 
             credentials:'include',
             mode:"cors",
@@ -45,9 +44,9 @@ const News = () => {
 		
 	}
 
-	async function getNews()
+async function getNews()
   {
-    let res =  await fetch("http://localhost:8080/api/v1/broadcast/getnews",{
+    let res =  await fetch(BACKEND_BASE_URL+"/api/v1/broadcast/getnews",{
 			method: 'POST', 
 			credentials:'include',
 			mode:"cors",
@@ -74,7 +73,7 @@ const News = () => {
   return (
     <div className='min-h-[85vh] w-full flex flex-col gap-[5vh] '>
 
-        <div className='py-2 text-center text-black bg-green-300'> <p className='font-semibold'>NEWS</p> </div>
+        <div className='py-2 text-center text-black bg-blue-400'> <p className='font-semibold'>NEWS</p> </div>
 
 		<div className='min-h-[50vh] bg-white px-3 py-1 rounded-lg shadow-lg '>
 			<JoditEditor
@@ -92,7 +91,7 @@ const News = () => {
 
 		<div className='flex justify-center w-full'>
 			<button 
-			className='  w-[100px] py-2 px-3 rounded-lg bg-green-600 text-white '
+			className='  w-[100px] py-2 px-3 rounded-lg bg-blue-400 text-white '
 			onClick={addNewsHandler}
 			> POST </button>
 		</div>
@@ -170,4 +169,4 @@ const News = () => {
   )
 }
 
-export default News
+export default NewsContent

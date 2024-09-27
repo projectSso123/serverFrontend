@@ -5,15 +5,9 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
 
-const News = () => {
-
-    const router = useRouter()
-    const urlParams = new URLSearchParams(window.location.search)
-    const id = urlParams.get('_id')
-    const type  = urlParams.get("type")
-    
+export default function EditPage({id , type}){
   const editor = useRef(null);
-	const [content, setContent] = useState(urlParams.get('content'))
+	const [content, setContent] = useState()
 	const [news,setNews] = useState([])
 	
 	const editNewsHandler = () => {
@@ -72,5 +66,3 @@ const News = () => {
     </div>
   )
 }
-
-export default News

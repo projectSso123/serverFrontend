@@ -1,10 +1,10 @@
 'use client'
-
 import { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
+import { BACKEND_BASE_URL } from '../../Consts';
 const JoditEditor = dynamic(() => import('jodit-react'), { ssr: false });
-const Notification = () => {
+const NotificationContent = () => {
    const router = useRouter();
 	useEffect(()=>{
 		getnotifications();
@@ -20,7 +20,7 @@ const Notification = () => {
 
 	const sendNotificationReq = async(content) => {
 		
-		let res =  await fetch("http://localhost:8080/api/v1/broadcast/addnotification",{
+		let res =  await fetch(BACKEND_BASE_URL+"/api/v1/broadcast/addnotification",{
 			method: 'POST', 
             credentials:'include',
             mode:"cors",
@@ -43,7 +43,7 @@ const Notification = () => {
 
 	async function getnotifications()
   {
-    let res =  await fetch("http://localhost:8080/api/v1/broadcast/getnotification",{
+    let res =  await fetch(BACKEND_BASE_URL+"/api/v1/broadcast/getnotification",{
 			method: 'POST', 
 			credentials:'include',
 			mode:"cors",
@@ -68,7 +68,7 @@ const Notification = () => {
   return (
     <div className='min-h-[85vh] w-full flex flex-col gap-[5vh] '>
 
-        <div className='py-2 text-center text-black bg-green-300'> <p className='font-semibold'>NOTIFICATION</p> </div>
+        <div className='py-2 text-center text-black bg-blue-400'> <p className='font-semibold'>NOTIFICATION</p> </div>
 
 		<div className='min-h-[50vh] bg-white px-3 py-1 rounded-lg shadow-lg '>
 			<JoditEditor
@@ -84,7 +84,7 @@ const Notification = () => {
 		
 		<div className='flex justify-center w-full'>
 			<button 
-			className='  w-[100px] py-2 px-3 rounded-lg bg-green-600 text-white '
+			className='  w-[100px] py-2 px-3 rounded-lg bg-blue-400 text-white '
 			onClick={addNotificationHandler}
 			> POST </button>
 		</div>
@@ -161,4 +161,4 @@ const Notification = () => {
   )
 }
 
-export default Notification
+export default NotificationContent

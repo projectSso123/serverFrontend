@@ -1,20 +1,21 @@
-import React from 'react'
-import Image from 'next/image';
-
-// const urlParams = new URLSearchParams(window.location.search)
-// const id = urlParams.get('_id')
-// const content = urlParams.get('content')
-
-const broadcast = () => {
-  return (
-    <div className='flex justify-center w-full h-full text-3xl font-semibold uppercase '>
-      <div
-      style={{backgroundImage:"<img src={'/broadcast.png'}  width={500} height={100}  />"}}
-      >
-        
-      </div>
-    </div>
-  )
+"use client"
+import React, { useState } from 'react'
+import { PROFILE_PAGE,NEWS_PAGE,NOTIFICATION_PAGE,BANNER_PAGE } from './Consts';
+import News from './Component/News/News';
+import Notification from './Component/Notification/Notification';
+import Banner from './Component/Banner/Banner';
+import { useContext } from 'react';
+import { SidebarContext } from './layout';
+function Dashboard(){
+    let {currentPage , setCurrentPage} = useContext(SidebarContext)
+   
+    return (
+        <>
+        {currentPage === PROFILE_PAGE && <></>}
+        {currentPage === NEWS_PAGE && <News/>}
+        {currentPage === NOTIFICATION_PAGE && <Notification/>}
+        {currentPage === BANNER_PAGE && <Banner/>}
+        </>
+    )
 }
-
-export default broadcast
+export default Dashboard;

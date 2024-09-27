@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { PhotoIcon } from '@heroicons/react/24/solid'
 import BannerPopUp from '@/app/Components/Banner.popUp'
 import Loading from '@/app/Components/loading'
-const page = () => {
+const BannerContent = () => {
   const [image, setimage] = useState();
   const [banners, setbanners] = useState([]);
   const [loading , setloading] = useState(false)
@@ -110,7 +110,7 @@ function Broadcastbanners({data , handleRefreash }){
   
   return(
     <>
-    <h1 className='text-center font-medium text-3xl'>BroadCast Banners</h1>
+    <h1 className='text-center font-medium text-2xl bg-blue-400'>BROADCAST BANNERS</h1>
     <div className='gap-4 flex flex-wrap flex-row items-center justify-center'>
           {
            data.map((dt, index)=>(
@@ -175,4 +175,4 @@ function Bannercards ({data,handleRefreash,setbannerdata,openPopup}){
   </article>
   )
 }
-export default page
+export default BannerContent
