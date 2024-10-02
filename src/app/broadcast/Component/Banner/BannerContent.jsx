@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { PhotoIcon } from '@heroicons/react/24/solid'
-import BannerPopUp from '@/app/Components/Banner.popUp'
-import Loading from '@/app/Components/loading'
+import BannerPopUp from './Banner.popUp'
+import Loading from '../Loading'
 const BannerContent = () => {
   const [image, setimage] = useState();
   const [banners, setbanners] = useState([]);

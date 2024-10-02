@@ -6,7 +6,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StyledBox } from "../styled.component/form.styledcomponent.js";
 import { StyledTile } from "../styled.component/form.styledcomponent.js";
+import toast, { Toaster } from 'react-hot-toast';
 import './page.scss'
+
 const theme = {
   dark:{
     primary:"black",
@@ -61,7 +63,6 @@ export default function Home() {
     const data = await response.json();
     if(data)
     setuserAccountData(data)
-
    }
 
     }
@@ -94,15 +95,15 @@ export default function Home() {
     )
   }
   return (
-    <ThemeProvider theme={theme}>
+    <>
     
     {
-      userAccountData  ?    <ChooseAccountTable data={userAccountData} clientData={clientData}>
+      userAccountData  ?    <ChooseAccountTable data={userAccountData} clientData={clientData} setdisplay={setdisplay}>
   
       </ChooseAccountTable> : display === 2 ? <Signup handleSignup={handleSignup} setdisplay={setdisplay}></Signup> :display === 1 && <Login setdisplay={setdisplay} setLoggedin={setLoggedin} ></Login>
     }
    
-    </ThemeProvider>
+    </>
       );
 }
 function UnAuthorized ({data}){
@@ -144,12 +145,14 @@ function Login({setdisplay , setLoggedin}){
   
    },[])
   const changehandler = (e) =>{
+    console.log(e.target.name)
     setcredential({...credential, [e.target.name]: e.target.value});
     }
   
   
-  const submithandler = async(event)=>{
-    event.preventDefault()
+  const submithandler = async()=>{
+
+    const tid = toast.loading("Logging in")
     try{
    
     const response = await fetch('http://localhost:8080/api/v1/signin',{
@@ -162,23 +165,31 @@ function Login({setdisplay , setLoggedin}){
     body:JSON.stringify({email:credential.email,password:credential.password,state:state})
 
     })
+    const data = await response.json()
     if(!response.ok){
-      console.log("failed")
-      alert(response.message)
+      
+      toast.dismiss(tid);
+      toast.error(data.message);
+      
     }
     else{
-      const data = await response.json();
-      setLoggedin(true)
-        
+      toast.dismiss(tid)
+      toast.success("Logged in")
+      setTimeout(() => {
+        setLoggedin(true)
+      }, 3000);
+    
     }
     }
     catch(err){
-      console.log(err)
+      toast.dismiss(tid)
+      toast.error(err)
+   
     }
   }
   return(
     <>
-    <StyledContainer>
+    {/* <StyledContainer>
     <StyledLabel>Sign up with Root</StyledLabel>
       <StyledHeader>Login</StyledHeader>
     <StyledFrom>
@@ -190,25 +201,37 @@ function Login({setdisplay , setLoggedin}){
         setdisplay(2);
       }}>SignUp</StyledButton>
       </StyledFrom>
-    </StyledContainer>
+    </StyledContainer> */}
+    <Toaster></Toaster>
+    <Tamplate content1={"Login To Your Account"} content2={"Root"}>
+    <label name="email" className="text-sm mt-4 text-blue-500 font-bold">Email</label>
+        <input type="email" name="email" placeholder="abx@" 
+        onChange={changehandler}
+        className="shadow-lg p-1 border border-solid border-slate-300 rounded-md  focus:shadow-sm focus:outline focus:outline-2   focus:outline-blue-400"
+        required
+        />
+        <label name="password" className="text-sm mt-4 text-blue-500 font-bold">Password</label>
+        <input name="password"type="password" placeholder="" 
+        onChange={changehandler}
+        className="shadow-lg p-1 border border-solid border-slate-300 rounded-md  focus:shadow-sm focus:outline focus:outline-2   focus:outline-blue-400"
+        required
+        />
+        <button type="submit" 
+        onClick={(e)=>{
+          e.preventDefault();
+          submithandler();
+        }}
+        className="shadow-lg rounded-sm mt-4 w-full p-2 bg-blue-400 font-bold text-white text-xl">Login</button>
+        <label className="text-sm text-blue-500 font-bold">Create new account <sapn onClick={()=>setdisplay(2)}>SignUp</sapn></label>
     
+    </Tamplate>
      
     
     </>
   )
 }
 function Signup({handleSignup,setdisplay}){
-  const [step , setstep ] = useState(1)
-  const nextStep = () => setstep(step + 1);
-  const prevStep = () => {
-     if(step == 1){
-      setstep(1)
-     }
-     else{
-
-       setstep(step - 1);
-    }
-  }
+  
   const [name,setname] = useState("");
   const [username , setusername] = useState("");
   const [email, setemail] = useState("");
@@ -253,7 +276,7 @@ function Signup({handleSignup,setdisplay}){
   }
  }
  async function handlesubmit(){
-
+   const tid = toast.loading('Processing');
    try{
     const response = await fetch("http://localhost:8080/api/v1/signup",{
       method:"POST",
@@ -267,80 +290,136 @@ function Signup({handleSignup,setdisplay}){
     const data = await response.json()
     if(!response.ok){
       console.log(data)
-    
+      toast.dismiss(tid)
+      toast.error(data?.message)
     }
     else
     { 
+      toast.dismiss(tid)
+      toast.success("Account Created")
       createEditor(data);
-      setdisplay(1)
-      console.log(data)
+      setTimeout(() => {
+        setdisplay(1)
+      },3000);
     }
     
    }
    catch(err){
+    toast.dismiss(tid)
+    toast.error(err.message)
     console.log(err);
    }
   }
   return(
-    <StyledContainer>
-    <StyledLabel>Sign up with Root</StyledLabel>
-      <StyledHeader>SignUp</StyledHeader>
-      <StyledFrom onSubmit={(e)=>{
-        e.preventDefault();
-        handlesubmit()
-      }}>
-      {step <= 1 && (<>
-        <StyledInput placeholder="name" 
-        onChange={(e)=>{
-          setname(e.target.value);
-        }}
+    // <StyledContainer>
+    // <StyledLabel>Sign up with Root</StyledLabel>
+    //   <StyledHeader>SignUp</StyledHeader>
+    //   <StyledFrom onSubmit={(e)=>{
+    //     e.preventDefault();
+    //     handlesubmit()
+    //   }}>
+    //   {step <= 1 && (<>
+    //     <StyledInput placeholder="name" 
+    //     onChange={(e)=>{
+    //       setname(e.target.value);
+    //     }}
         
-        required/>
-      <StyledInput placeholder="username"
-      onChange={(e)=>{
-        setusername(e.target.value);
-      }}
-      required />
-      <StyledButton type='submit' onClick={nextStep}>Next</StyledButton>
-      <StyledButton type='submit' onClick={prevStep}>Previous</StyledButton>
-      </>)}
-      {step === 2 && (<>
-        <StyledInput type="email" placeholder="email" 
-        onChange={(e)=>{
-          setemail(e.target.value);
-        }}
-        required />
-       <StyledButton type='submit' onClick={nextStep}>Next</StyledButton>
-      <StyledButton type='submit' onClick={prevStep}>Previous</StyledButton>
-      </>)}
-      {step === 3 && (<>
-        <StyledInput type="password" placeholder="password" 
-        onChange={(e)=>{
-          setpassword(e.target.value);
-        }}
-        required />
-        <StyledInput type="password" placeholder="re-enter password" 
-        onChange={(e)=>{
-          setpassword2(e.target.value);
-        }}
-        required />
-        <span>{message}</span>
-        <StyledButton  onClick={prevStep}>Previous</StyledButton>
-      <StyledButton type='submit'>Signup</StyledButton>
-      </>)}
-      </StyledFrom>
+    //     required/>
+    //   <StyledInput placeholder="username"
+    //   onChange={(e)=>{
+    //     setusername(e.target.value);
+    //   }}
+    //   required />
+    //   <StyledButton type='submit' onClick={nextStep}>Next</StyledButton>
+    //   <StyledButton type='submit' onClick={prevStep}>Previous</StyledButton>
+    //   </>)}
+    //   {step === 2 && (<>
+    //     <StyledInput type="email" placeholder="email" 
+    //     onChange={(e)=>{
+    //       setemail(e.target.value);
+    //     }}
+    //     required />
+    //    <StyledButton type='submit' onClick={nextStep}>Next</StyledButton>
+    //   <StyledButton type='submit' onClick={prevStep}>Previous</StyledButton>
+    //   </>)}
+    //   {step === 3 && (<>
+    //     <StyledInput type="password" placeholder="password" 
+    //     onChange={(e)=>{
+    //       setpassword(e.target.value);
+    //     }}
+    //     required />
+    //     <StyledInput type="password" placeholder="re-enter password" 
+    //     onChange={(e)=>{
+    //       setpassword2(e.target.value);
+    //     }}
+    //     required />
+    //     <span>{message}</span>
+    //     <StyledButton  onClick={prevStep}>Previous</StyledButton>
+    //   <StyledButton type='submit'>Signup</StyledButton>
+    //   </>)}
+    //   </StyledFrom>
       
-    </StyledContainer>
+    // </StyledContainer>
+    <>
+    <Toaster></Toaster>
+    <Tamplate content1={"Create Account On"} content2={"Root"}>
+    <label className="text-sm mt-4 text-blue-500 font-bold" name="namelabel">Full name</label>
+        <input type="text" name="name" 
+        onChange={(e)=>setname(e.target.value)}
+        placeholder="Anonymus" className="shadow-lg p-1 border border-solid placeholder:text-sm placeholder:ml-2 border-slate-300 rounded-md  focus:shadow-sm focus:outline focus:outline-2   focus:outline-blue-400"
+        required
+        />
+        <label
+        name="username" 
+        className="text-sm mt-4 text-blue-500 font-bold"> Username</label>
+        <input
+         name="username"
+         onChange={(e)=>setusername(e.target.value)}
+         type="text" placeholder="abc123" className="shadow-lg p-1 border border-solid border-slate-300 rounded-md  focus:shadow-sm focus:outline focus:outline-2   focus:outline-blue-400"
+         required
+         />
+        <label name="email"
+         className="text-sm mt-4 text-blue-500 font-bold">Email</label>
+        <input 
+        name="email"
+        onChange={(e)=>setemail(e.target.value)}
+        type="email" placeholder="abx@" className="shadow-lg p-1 border border-solid border-slate-300 rounded-md  focus:shadow-sm focus:outline focus:outline-2   focus:outline-blue-400"
+        required
+        />
+        <label name="password"
+        className="text-sm mt-4 text-blue-500 font-bold">Password</label>
+        <input 
+        name="password"
+        onChange={(e)=>setpassword(e.target.value)}
+        type="password" placeholder="" className="shadow-lg p-1 border border-solid border-slate-300 rounded-md  focus:shadow-sm focus:outline focus:outline-2   focus:outline-blue-400"
+        required/>
+      <label name="password"
+        className="text-sm mt-4 text-blue-500 font-bold">Confirm password</label>
+        <input name="password" 
+        onChange={(e)=>setpassword2(e.target.value)}
+        type="password" placeholder="" className="shadow-lg p-1 border border-solid border-slate-300 rounded-md  focus:shadow-sm focus:outline focus:outline-2   focus:outline-blue-400"
+        required
+        />
+    <button
+        onClick={(e)=>{
+         
+   e.preventDefault()
+          handlesubmit()
+        }} 
+        type="submit" className="shadow-lg  rounded-sm mt-4 w-full p-2 bg-blue-400 font-bold text-white text-xl">Sign-Up</button>
+        <label className="text-sm text-blue-500 font-bold">Already Have an Account <sapn onClick={()=>setdisplay(1)}>Login</sapn></label>
+    </Tamplate>
+    </>
   )
 }
-function ChooseAccountTable({data,clientData}){
+function ChooseAccountTable({data,clientData,setdisplay}){
   const router = useRouter();
   const params = new URLSearchParams(window.location.search);
   const redirect_uri = params.get("redirect_uri");
   console.log(redirect_uri)
   const handlesubmit = async(data)=>{
     if(!redirect_uri){
-      console.log("working")
+     
       router.push("/dashboard")
     }
     else{
@@ -372,20 +451,66 @@ function ChooseAccountTable({data,clientData}){
   }
   return (
     <>
-    <StyledContainer>
+{/* <StyledContainer>
     <StyledLabel>Sign up with Root</StyledLabel>
       <StyledHeader>Choose Account</StyledHeader>
       <StyledBox>
         <StyledTile onClick={()=>{
           handlesubmit(data);
-        }}>
+        }}>    
           <span className="tileUsername">{data.username}</span>
           <span className="tileEmail">{data.email}</span>
         </StyledTile>
 
 
       </StyledBox>
-    </StyledContainer>
+    </StyledContainer> */}
+    <Tamplate content1={"Choose You Account"} content2={"Root"}>
+    <div className="w-full flex gap-2 justify-center flex-col items-center ">
+      <div onClick={()=>{handlesubmit(data)}}
+      className="w-40 h-16 rounded-md shadow-md p-2 bg-blue-400 text-white flex flex-col justify-center transition transform active:scale-95">
+      <span className="font-bold  ">{data.username}</span>
+      <span className="font-bold ">{data.email}</span>
+      </div>
+      <div onClick={()=>{setdisplay(1)}}
+      className="w-40 h-16 rounded-md shadow-xl p-2 flex flex-col justify-center  transition transform active:scale-95">
+     
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 text-blue-400" >
+  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+</svg>
+
+       <label className="font-bold text-sm text-blue-400"> Different Account </label>
+
+      </div>
+    </div>
+    </Tamplate>
     </>
   )
+}
+function Tamplate({content1,content2,children}){
+return(
+  <div className=" mt-8 SignUpMainBox w-4/5 h-4/5 bg-white mx-auto shadow-2xl flex justify-center rounded-lg max-sm:flex-col max-sm:w-full max-sm:h-screen  max-sm:mt-0">
+  <div className="SideBox w-2/5 h-full flex relative bg-blue-400 max-sm:w-full max-sm:h-52">
+   <div className="absolute p-5 top-1/3 text-white max-sm:top-1">
+   <h2 className="text-start text-4xl ">
+    {content1}
+    </h2>
+    <h1 className="text-start text-4xl font-bold">
+      {content2}
+    </h1>
+
+   </div>
+   
+
+  </div>
+  <div className="FormBox w-3/5 h-full max-sm:w-full">
+   <form className="SignUpForm flex w-full h-full items-center justify-center flex-col ">
+   <div className="flex w-2/4  flex-col max-lg:w-5/6">
+   {children}
+    </div>
+  
+   </form>
+  </div>
+</div>
+)
 }
